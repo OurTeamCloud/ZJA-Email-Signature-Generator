@@ -38,6 +38,17 @@ h1 {
   gap: 16px;
   margin-bottom: 20px;
 }
+/* *** ADDED: Mobile optimization for form layout *** */
+@media (max-width: 600px) {
+    body { padding: 10px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .logo-options { flex-direction: column; align-items: flex-start; }
+    .logo-option:last-child { margin-top: 10px; }
+    #customLogoUrl { width: 100% !important; margin-top: 5px; }
+    .button-group { flex-direction: column; }
+    .button-group button { width: 100%; margin-bottom: 8px; }
+}
+/* ************************************************* */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -210,7 +221,6 @@ button {
 <div class="container">
   <h1>📧 Email Signature Generator</h1>
   
-  <!-- Form Section -->
   <div class="form-section">
     <div class="warning-box">
       ⚠️ <strong>Important:</strong> After copying, paste into Gmail's signature editor. If formatting appears incorrect, use Gmail's formatting tools to adjust colors manually.
@@ -218,7 +228,6 @@ button {
     
     <h2 style="font-size: 16px; margin: 0 0 16px 0; color: #2c3e50;">Basic Information</h2>
     
-    <!-- Logo Selection -->
     <div class="form-group">
       <label>Select Logo</label>
       <div class="logo-options">
@@ -308,7 +317,6 @@ button {
     <textarea id="signatureHtml" readonly></textarea>
   </div>
   
-  <!-- Preview Section -->
   <div class="preview-section">
     <div class="preview-header">
       <h2>Preview</h2>
@@ -316,8 +324,7 @@ button {
     </div>
     
     <div class="signature-container" id="signaturePreview">
-      <!-- Signature will be generated here -->
-    </div>
+      </div>
     
     <div class="help-text">
       <strong>To add to Gmail:</strong><br>
@@ -368,12 +375,24 @@ function generateSignatureHTML(data) {
   const logoUrl = getSelectedLogo();
   
   // Build HTML with ZERO indentation - starts at column 0
-  let html = '<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;color:#333333;font-size:13px;line-height:1.4;">';
+  let html = '<style>';
+  // CSS for mobile stacking - crucial part
+  html += '@media screen and (max-width: 480px) {';
+  html += '    .sig-logo-td { display: block !important; width: 100% !important; padding-right: 0 !important; padding-bottom: 10px !important; }';
+  html += '    .sig-info-td { display: block !important; width: 100% !important; padding-left: 0 !important; border-left: none !important; }';
+  html += '}';
+  html += '</style>';
+
+  html += '<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;color:#333333;font-size:13px;line-height:1.4;width:380px;">'; // Added width for better control
   html += '<tr>';
-  html += '<td style="padding-right:15px;vertical-align:middle;">';
-  html += '<img src="' + logoUrl + '" alt="Logo" width="120" style="display:block;">';
+  
+  // Logo Cell - added class 'sig-logo-td'
+  html += '<td class="sig-logo-td" style="padding-right:15px;vertical-align:top;width:130px;">'; // Set a fixed width
+  html += '<img src="' + logoUrl + '" alt="Logo" width="120" style="display:block;height:auto;max-width:120px;">';
   html += '</td>';
-  html += '<td style="padding-left:15px;border-left:3px solid #b8862a;vertical-align:top;">';
+  
+  // Info Cell - added class 'sig-info-td'
+  html += '<td class="sig-info-td" style="padding-left:15px;border-left:3px solid #b8862a;vertical-align:top;">';
   html += '<table cellpadding="0" cellspacing="0" border="0">';
   html += '<tr>';
   html += '<td style="font-size:16px;font-weight:bold;color:#b8862a;padding-bottom:5px;">';
@@ -387,7 +406,7 @@ function generateSignatureHTML(data) {
   // Phone
   if (data.phone) {
     html += '<tr>';
-    html += '<td style="padding-bottom:3px;">';
+    html += '<td style="padding-bottom:3px;white-space:nowrap;">'; // Added white-space:nowrap
     html += '<strong style="color:#b8862a;display:inline-block;width:25px;">C</strong>' + data.phone;
     html += '</td>';
     html += '</tr>';
@@ -397,7 +416,7 @@ function generateSignatureHTML(data) {
   if (data.address) {
     html += '<tr>';
     html += '<td style="padding-bottom:3px;">';
-    html += '<strong style="color:#b8862a;display:inline-block;width:25px;vertical-align:top;">A</strong><span style="display:inline-block;">' + data.address + '</span>';
+    html += '<strong style="color:#b8862a;display:inline-block;width:25px;vertical-align:top;">A</strong><span style="display:inline-block;white-space:normal;">' + data.address + '</span>'; // Changed to normal wrapping
     html += '</td>';
     html += '</tr>';
   }
@@ -405,7 +424,7 @@ function generateSignatureHTML(data) {
   // Email
   if (data.email) {
     html += '<tr>';
-    html += '<td style="padding-bottom:3px;">';
+    html += '<td style="padding-bottom:3px;white-space:nowrap;">'; // Added white-space:nowrap
     html += '<strong style="color:#b8862a;display:inline-block;width:25px;">E</strong><a href="mailto:' + data.email + '" style="color:#1a73e8;text-decoration:none;">' + data.email + '</a>';
     html += '</td>';
     html += '</tr>';
@@ -415,7 +434,7 @@ function generateSignatureHTML(data) {
   if (data.website) {
     const websiteUrl = data.website.startsWith('http') ? data.website : 'https://' + data.website;
     html += '<tr>';
-    html += '<td style="padding-bottom:3px;">';
+    html += '<td style="padding-bottom:3px;white-space:nowrap;">'; // Added white-space:nowrap
     html += '<strong style="color:#b8862a;display:inline-block;width:25px;">W</strong><a href="' + websiteUrl + '" style="color:#1a73e8;text-decoration:none;">' + data.website + '</a>';
     html += '</td>';
     html += '</tr>';
@@ -424,7 +443,7 @@ function generateSignatureHTML(data) {
   // Instagram - matching the same format as other fields
   if (data.instagramHandle && data.instagramUrl) {
     html += '<tr>';
-    html += '<td style="padding-bottom:3px;">';
+    html += '<td style="padding-bottom:3px;white-space:nowrap;">'; // Added white-space:nowrap
     html += '<strong style="color:#333333;display:inline-block;width:25px;">IG</strong><a href="' + data.instagramUrl + '" style="color:#1a73e8;text-decoration:none;">' + data.instagramHandle + '</a>';
     html += '</td>';
     html += '</tr>';
@@ -433,7 +452,7 @@ function generateSignatureHTML(data) {
   // Facebook - matching the same format as other fields
   if (data.facebookName && data.facebookUrl) {
     html += '<tr>';
-    html += '<td style="padding-bottom:3px;">';
+    html += '<td style="padding-bottom:3px;white-space:nowrap;">'; // Added white-space:nowrap
     html += '<strong style="color:#333333;display:inline-block;width:25px;">FB</strong><a href="' + data.facebookUrl + '" style="color:#1a73e8;text-decoration:none;">' + data.facebookName + '</a>';
     html += '</td>';
     html += '</tr>';
@@ -556,5 +575,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-
 </html>
