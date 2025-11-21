@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Email Signature Generator - Zucker Academy</title>
+<style>
+* { box-sizing: border-box; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+  background: #f5f7fa; 
+  margin: 0; 
+  padding: 20px;
+  line-height: 1.5;
+}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+h1 { 
+  color: #2c3e50;
+  font-size: 24px; 
+  margin: 0 0 20px 0; 
+  font-weight: 600;
+}
+
+/* Form Styles */
+.form-section {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 4px;
+}
+.form-group input, .form-group select {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 20px 0 12px 0;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Button Styles */
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-primary {
+  background: #4299e1;
+  color: white;
+}
+.btn-primary:hover {
+  background: #3182ce;
+}
+.btn-success {
+  background: #48bb78;
+  color: white;
+}
+.btn-success:hover {
+  background: #38a169;
+}
+.btn-secondary {
+  background: #718096;
+  color: white;
+}
+.btn-secondary:hover {
+  background: #4a5568;
+}
+
+/* Preview Section */
+.preview-section {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.preview-header h2 {
+  font-size: 18px;
+  color: #2c3e50;
+  margin: 0;
+}
+.signature-container {
+  border: 1px dashed #cbd5e0;
+  border-radius: 4px;
+  padding: 20px;
+  background: #ffffff;
+  min-height: 200px;
+}
+
+/* Status Messages */
+.status {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-top: 12px;
+  display: none;
+  font-size: 14px;
+}
+.status.success {
+  background: #c6f6d5;
+  color: #22543d;
+  border: 1px solid #9ae6b4;
+  display: block;
+}
+.status.info {
+  background: #bee3f8;
+  color: #2c5282;
+  border: 1px solid #90cdf4;
+  display: block;
+}
+.status.error {
+  background: #fed7d7;
+  color: #742a2a;
+  border: 1px solid #fc8181;
+  display: block;
+}
+
+/* Hidden textarea for HTML */
+#signatureHtml {
+  width: 100%;
+  height: 150px;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: none;
+}
+
+.help-text {
+  font-size: 12px;
+  color: #718096;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.warning-box {
+  background: #fef5e7;
+  border: 1px solid #f9e79f;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #856404;
+}
+
+.logo-options {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.logo-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📧 Email Signature Generator</h1>
+  
+  <!-- Form Section -->
+  <div class="form-section">
+    <div class="warning-box">
+      ⚠️ <strong>Important:</strong> After copying, paste into Gmail's signature editor. If formatting appears incorrect, use Gmail's formatting tools to adjust colors manually.
+    </div>
+    
+    <h2 style="font-size: 16px; margin: 0 0 16px 0; color: #2c3e50;">Basic Information</h2>
+    
+    <!-- Logo Selection -->
+    <div class="form-group">
+      <label>Select Logo</label>
+      <div class="logo-options">
+        <div class="logo-option">
+          <input type="radio" id="logo-hebrew" name="logo" value="hebrew" checked>
+          <label for="logo-hebrew">Zucker Hebrew Academy</label>
+        </div>
+        <div class="logo-option">
+          <input type="radio" id="logo-jewish" name="logo" value="jewish">
+          <label for="logo-jewish">Zucker Jewish Academy</label>
+        </div>
+        <div class="logo-option">
+          <input type="radio" id="logo-custom" name="logo" value="custom">
+          <label for="logo-custom">Custom URL:</label>
+          <input type="text" id="customLogoUrl" placeholder="https://example.com/logo.gif" style="width: 300px; padding: 4px 8px; font-size: 13px;">
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="name">Full Name *</label>
+        <input type="text" id="name" value="Esti Schwartz" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="title">Job Title *</label>
+        <input type="text" id="title" value="Office Administrator" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="text" id="phone" value="754-307-7750">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" value="office@zuckerhebrewacademy.org" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="website">Website</label>
+        <input type="text" id="website" value="www.zuckerhebrewacademy.org">
+      </div>
+      
+      <div class="form-group">
+        <label for="address">Full Address (won't break lines)</label>
+        <input type="text" id="address" value="8950 Stirling Road, Hollywood, FL 33024" 
+               placeholder="Enter complete address - it will stay on one line">
+      </div>
+    </div>
+    
+    <h3 class="section-title">Social Media (Optional)</h3>
+    
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="instagramHandle">Instagram Handle to Display</label>
+        <input type="text" id="instagramHandle" value="@zuckerhebrewacademy" placeholder="@username">
+      </div>
+      
+      <div class="form-group">
+        <label for="instagramUrl">Instagram Profile URL</label>
+        <input type="text" id="instagramUrl" value="https://www.instagram.com/zuckerhebrewacademy" 
+               placeholder="https://www.instagram.com/username">
+      </div>
+      
+      <div class="form-group">
+        <label for="facebookName">Facebook Name to Display</label>
+        <input type="text" id="facebookName" value="Zucker Hebrew Academy">
+      </div>
+      
+      <div class="form-group">
+        <label for="facebookUrl">Facebook Page URL</label>
+        <input type="text" id="facebookUrl" value="https://www.facebook.com/zuckerhebrewacademy" 
+               placeholder="https://www.facebook.com/pagename">
+      </div>
+    </div>
+    
+    <div class="button-group">
+      <button class="btn-primary" onclick="updateSignature()">Generate Signature</button>
+      <button class="btn-success" onclick="copySignature()">Copy for Gmail</button>
+      <button class="btn-secondary" onclick="showRawHtml()">Show Raw HTML</button>
+      <button class="btn-secondary" onclick="resetForm()">Reset to Defaults</button>
+    </div>
+    
+    <div id="statusMessage" class="status"></div>
+    <textarea id="signatureHtml" readonly></textarea>
+  </div>
+  
+  <!-- Preview Section -->
+  <div class="preview-section">
+    <div class="preview-header">
+      <h2>Preview</h2>
+      <span style="font-size: 13px; color: #718096;">How it will look (Gmail may render slightly differently)</span>
+    </div>
+    
+    <div class="signature-container" id="signaturePreview">
+      <!-- Signature will be generated here -->
+    </div>
+    
+    <div class="help-text">
+      <strong>To add to Gmail:</strong><br>
+      1. Click "Copy for Gmail" button<br>
+      2. Open Gmail → Settings → See all settings → General tab<br>
+      3. Find "Signature" section → Create new or edit existing<br>
+      4. Click in signature box, select all (Ctrl+A/Cmd+A), then paste<br>
+      5. Save Changes at bottom of page<br><br>
+      <strong>Logo Storage Options:</strong><br>
+      • Use the provided Hebrew/Jewish Academy logos (hosted externally)<br>
+      • Upload to Google Drive, make public, use direct image URL<br>
+      • Use any public HTTPS image URL<br>
+      • For best results, use GIF or PNG format under 50KB
+    </div>
+  </div>
+</div>
+
+<script>
+// Logo URLs - using Google Drive direct links
+const logoUrls = {
+  hebrew: 'https://drive.google.com/uc?export=view&id=1fC_Tju3XoXIOEkKdw_EmBy-7N5Vld2Cx',
+  jewish: 'https://drive.google.com/uc?export=view&id=1ZK4ebM9JxaGkNGOw9dvGouW94iMgGlla'
+};
+
+// Default values
+const defaults = {
+  name: 'Esti Schwartz',
+  title: 'Office Administrator',
+  phone: '754-307-7750',
+  address: '8950 Stirling Road, Hollywood, FL 33024',
+  email: 'office@zuckerhebrewacademy.org',
+  website: 'www.zuckerhebrewacademy.org',
+  instagramHandle: '@zuckerhebrewacademy',
+  instagramUrl: 'https://www.instagram.com/zuckerhebrewacademy',
+  facebookName: 'Zucker Hebrew Academy',
+  facebookUrl: 'https://www.facebook.com/zuckerhebrewacademy'
+};
+
+function getSelectedLogo() {
+  const selected = document.querySelector('input[name="logo"]:checked').value;
+  if (selected === 'custom') {
+    return document.getElementById('customLogoUrl').value || logoUrls.hebrew;
+  }
+  return logoUrls[selected];
+}
+
+function generateSignatureHTML(data) {
+  const logoUrl = getSelectedLogo();
+  
+  // Build HTML with ZERO indentation - starts at column 0
+  let html = '<table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;color:#333333;font-size:13px;line-height:1.4;">';
+  html += '<tr>';
+  html += '<td style="padding-right:15px;vertical-align:middle;">';
+  html += '<img src="' + logoUrl + '" alt="Logo" width="120" style="display:block;">';
+  html += '</td>';
+  html += '<td style="padding-left:15px;border-left:3px solid #b8862a;vertical-align:top;">';
+  html += '<table cellpadding="0" cellspacing="0" border="0">';
+  html += '<tr>';
+  html += '<td style="font-size:16px;font-weight:bold;color:#b8862a;padding-bottom:5px;">';
+  html += data.name;
+  html += '</td>';
+  html += '</tr>';
+  html += '<tr>';
+  html += '<td style="color:#666666;font-size:14px;padding-bottom:10px;">' + data.title + '</td>';
+  html += '</tr>';
+  
+  // Phone
+  if (data.phone) {
+    html += '<tr>';
+    html += '<td style="padding-bottom:3px;">';
+    html += '<strong style="color:#b8862a;display:inline-block;width:25px;">C</strong>' + data.phone;
+    html += '</td>';
+    html += '</tr>';
+  }
+  
+  // Address - prevent line breaks
+  if (data.address) {
+    html += '<tr>';
+    html += '<td style="padding-bottom:3px;">';
+    html += '<strong style="color:#b8862a;display:inline-block;width:25px;vertical-align:top;">A</strong><span style="display:inline-block;">' + data.address + '</span>';
+    html += '</td>';
+    html += '</tr>';
+  }
+  
+  // Email
+  if (data.email) {
+    html += '<tr>';
+    html += '<td style="padding-bottom:3px;">';
+    html += '<strong style="color:#b8862a;display:inline-block;width:25px;">E</strong><a href="mailto:' + data.email + '" style="color:#1a73e8;text-decoration:none;">' + data.email + '</a>';
+    html += '</td>';
+    html += '</tr>';
+  }
+  
+  // Website
+  if (data.website) {
+    const websiteUrl = data.website.startsWith('http') ? data.website : 'https://' + data.website;
+    html += '<tr>';
+    html += '<td style="padding-bottom:3px;">';
+    html += '<strong style="color:#b8862a;display:inline-block;width:25px;">W</strong><a href="' + websiteUrl + '" style="color:#1a73e8;text-decoration:none;">' + data.website + '</a>';
+    html += '</td>';
+    html += '</tr>';
+  }
+  
+  // Instagram - matching the same format as other fields
+  if (data.instagramHandle && data.instagramUrl) {
+    html += '<tr>';
+    html += '<td style="padding-bottom:3px;">';
+    html += '<strong style="color:#333333;display:inline-block;width:25px;">IG</strong><a href="' + data.instagramUrl + '" style="color:#1a73e8;text-decoration:none;">' + data.instagramHandle + '</a>';
+    html += '</td>';
+    html += '</tr>';
+  }
+  
+  // Facebook - matching the same format as other fields
+  if (data.facebookName && data.facebookUrl) {
+    html += '<tr>';
+    html += '<td style="padding-bottom:3px;">';
+    html += '<strong style="color:#333333;display:inline-block;width:25px;">FB</strong><a href="' + data.facebookUrl + '" style="color:#1a73e8;text-decoration:none;">' + data.facebookName + '</a>';
+    html += '</td>';
+    html += '</tr>';
+  }
+  
+  html += '</table>';
+  html += '</td>';
+  html += '</tr>';
+  html += '</table>';
+  
+  return html;
+}
+
+function updateSignature() {
+  const data = {
+    name: document.getElementById('name').value.trim(),
+    title: document.getElementById('title').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    website: document.getElementById('website').value.trim(),
+    instagramHandle: document.getElementById('instagramHandle').value.trim(),
+    instagramUrl: document.getElementById('instagramUrl').value.trim(),
+    facebookName: document.getElementById('facebookName').value.trim(),
+    facebookUrl: document.getElementById('facebookUrl').value.trim()
+  };
+  
+  // Validate required fields
+  if (!data.name || !data.title || !data.email) {
+    showStatus('Please fill in required fields: Name, Title, and Email', 'error');
+    return;
+  }
+  
+  const signatureHtml = generateSignatureHTML(data);
+  document.getElementById('signaturePreview').innerHTML = signatureHtml;
+  document.getElementById('signatureHtml').value = signatureHtml;
+  
+  showStatus('Signature generated successfully!', 'success');
+}
+
+async function copySignature() {
+  const html = document.getElementById('signatureHtml').value;
+  
+  if (!html) {
+    showStatus('Please generate a signature first!', 'info');
+    return;
+  }
+  
+  try {
+    // Try modern clipboard API
+    if (navigator.clipboard && window.ClipboardItem) {
+      const blob = new Blob([html], { type: 'text/html' });
+      const clipboardItem = new ClipboardItem({ 'text/html': blob });
+      await navigator.clipboard.write([clipboardItem]);
+      showStatus('✓ Signature copied! Paste into Gmail signature editor.', 'success');
+    } else {
+      // Fallback
+      const textarea = document.getElementById('signatureHtml');
+      textarea.style.display = 'block';
+      textarea.select();
+      document.execCommand('copy');
+      textarea.style.display = 'none';
+      showStatus('✓ Signature copied! Paste into Gmail signature editor.', 'success');
+    }
+  } catch (err) {
+    console.error('Copy failed:', err);
+    showRawHtml();
+    showStatus('Auto-copy failed. Select and copy the HTML code shown below.', 'error');
+  }
+}
+
+function showRawHtml() {
+  const textarea = document.getElementById('signatureHtml');
+  if (textarea.style.display === 'block') {
+    textarea.style.display = 'none';
+  } else {
+    textarea.style.display = 'block';
+    textarea.select();
+  }
+}
+
+function resetForm() {
+  Object.keys(defaults).forEach(key => {
+    const element = document.getElementById(key);
+    if (element) {
+      element.value = defaults[key];
+    }
+  });
+  document.getElementById('logo-hebrew').checked = true;
+  updateSignature();
+  showStatus('Form reset to default values.', 'info');
+}
+
+function showStatus(message, type) {
+  const statusEl = document.getElementById('statusMessage');
+  statusEl.textContent = message;
+  statusEl.className = `status ${type}`;
+  setTimeout(() => {
+    statusEl.className = 'status';
+  }, 5000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  updateSignature();
+  
+  // Add real-time preview updates
+  let updateTimeout;
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => {
+      clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(updateSignature, 300);
+    });
+  });
+  
+  // Update when logo selection changes
+  document.querySelectorAll('input[name="logo"]').forEach(radio => {
+    radio.addEventListener('change', updateSignature);
+  });
+});
+</script>
+</body>
+</html>
